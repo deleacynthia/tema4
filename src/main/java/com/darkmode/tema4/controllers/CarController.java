@@ -7,6 +7,7 @@ import com.darkmode.tema4.services.CarService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -22,16 +23,18 @@ public class CarController {
 
     @GetMapping("/cars")
 
-    public ResponseDTO getAllCars(@CookieValue(value = "darkmode", defaultValue = "false") String darkModeValue) {
+    public ResponseEntity<ResponseDTO> getAllCars(@CookieValue(value = "darkmode", defaultValue = "false") String darkModeValue) {
         boolean darkMode = Boolean.parseBoolean(darkModeValue);
         List<CarDTO> cars = carService.getAllCars();
-        return new ResponseDTO(darkMode, cars);
+        return ResponseEntity.ok(new ResponseDTO(darkMode, cars));
     }
 
     @PutMapping("/dark-mode")
-    public void setDarkModePreference(@RequestBody DarkModeDTO darkModeDTO, HttpServletResponse response) {
+    public ResponseEntity<Void> setDarkMode(@RequestBody DarkModeDTO darkModeDTO, HttpServletResponse response) {
         Cookie darkModeCookie = new Cookie("darkmode", String.valueOf(darkModeDTO.isDarkMode()));
         response.addCookie(darkModeCookie);
+
+        return ResponseEntity.ok().build();
     }
 
 
